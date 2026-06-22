@@ -1,6 +1,7 @@
 import { Scene3D } from '@/components/Scene3D';
 import { TopBar } from '@/components/TopBar';
 import { StatusPanel } from '@/components/StatusPanel';
+import { PlaybackControlPanel } from '@/components/PlaybackControlPanel';
 import { useWebSocket } from '@/hooks/useWebSocket';
 
 const WS_URL = 'ws://localhost:8080/ws/agv';
@@ -16,6 +17,7 @@ export default function Home() {
 
       <TopBar />
       <StatusPanel />
+      <PlaybackControlPanel />
 
       <div
         className="absolute inset-0 pointer-events-none z-30"
