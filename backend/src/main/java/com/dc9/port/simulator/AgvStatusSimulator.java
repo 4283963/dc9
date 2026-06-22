@@ -20,6 +20,9 @@ public class AgvStatusSimulator {
     private static final double TERMINAL_WIDTH = 80;
     private static final double TERMINAL_DEPTH = 60;
     private static final double Y_GROUND = 0.3;
+    private static final String[] CONTAINER_COLORS = {
+            "#ff9f43", "#ee5a24", "#f39c12", "#d35400", "#e67e22", "#c0392b", "#27ae60", "#2980b9"
+    };
 
     private static AgvStatusSimulator instance;
 
@@ -43,6 +46,10 @@ public class AgvStatusSimulator {
             state.speed = 1.5 + random.nextDouble() * 2.0;
             state.battery = 40 + random.nextDouble() * 60;
             state.status = "RUNNING";
+            state.hasContainer = random.nextDouble() < 0.6;
+            state.containerColor = CONTAINER_COLORS[random.nextInt(CONTAINER_COLORS.length)];
+            state.containerId = String.format("CTN-%05d", random.nextInt(90000) + 10000);
+            state.loadingTimer = 0;
             vehicleStates.put(id, state);
             broadcaster.updateStatus(id, toAgvStatus(state));
         }
@@ -63,10 +70,26 @@ public class AgvStatusSimulator {
             if (dist < 0.5) {
                 state.targetX = (random.nextDouble() - 0.5) * TERMINAL_WIDTH * 0.8;
                 state.targetZ = (random.nextDouble() - 0.5) * TERMINAL_DEPTH * 0.8;
-                if (random.nextDouble() < 0.1) {
-                    state.status = random.nextDouble() < 0.5 ? "IDLE" : "CHARGING";
-                    state.idleTime = 2 + random.nextInt(5);
+                if (random.nextDouble() < 0.3) {
+                    state.status = "IDLE";
+                    state.loadingTimer = 3 + random.nextDouble() * 3;
+                } else if (random.nextDouble() < 0.15) {
+                    state.status = "CHARGING";
+                    state.idleTime = 4 + random.nextInt(6);
                 }
+                continue;
+            }
+            if (state.loadingTimer > 0) {
+                state.loadingTimer -= dt;
+                if (state.loadingTimer <= 0 && state.status.equals("IDLE")) {
+                    state.hasContainer = !state.hasContainer;
+                    if (state.hasContainer) {
+                        state.containerColor = CONTAINER_COLORS[random.nextInt(CONTAINER_COLORS.length)];
+                        state.containerId = String.format("CTN-%05d", random.nextInt(90000) + 10000);
+                    }
+                    state.status = "RUNNING";
+                }
+                broadcaster.updateStatus(state.id, toAgvStatus(state));
                 continue;
             }
             if (state.idleTime > 0) {
@@ -111,6 +134,9 @@ public class AgvStatusSimulator {
         status.setSpeed(state.status.equals("RUNNING") ? Math.round(state.speed * 100.0) / 100.0 : 0);
         status.setBattery(Math.round(state.battery * 10.0) / 10.0);
         status.setStatus(state.status);
+        status.setHasContainer(state.hasContainer);
+        status.setContainerColor(state.containerColor);
+        status.setContainerId(state.containerId);
         return status;
     }
 
@@ -123,5 +149,9 @@ public class AgvStatusSimulator {
         double battery;
         String status;
         double idleTime;
+        boolean hasContainer;
+        String containerColor;
+        String containerId;
+        double loadingTimer;
     }
 }

@@ -8,11 +8,15 @@ public class AgvStatus {
     private double speed;
     private double battery;
     private String status;
+    private boolean hasContainer;
+    private String containerColor;
+    private String containerId;
 
     public AgvStatus() {}
 
     public AgvStatus(String id, long timestamp, Position position, Rotation rotation,
-                     double speed, double battery, String status) {
+                     double speed, double battery, String status,
+                     boolean hasContainer, String containerColor, String containerId) {
         this.id = id;
         this.timestamp = timestamp;
         this.position = position;
@@ -20,6 +24,9 @@ public class AgvStatus {
         this.speed = speed;
         this.battery = battery;
         this.status = status;
+        this.hasContainer = hasContainer;
+        this.containerColor = containerColor;
+        this.containerId = containerId;
     }
 
     public String getId() { return id; }
@@ -36,6 +43,12 @@ public class AgvStatus {
     public void setBattery(double battery) { this.battery = battery; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public boolean isHasContainer() { return hasContainer; }
+    public void setHasContainer(boolean hasContainer) { this.hasContainer = hasContainer; }
+    public String getContainerColor() { return containerColor; }
+    public void setContainerColor(String containerColor) { this.containerColor = containerColor; }
+    public String getContainerId() { return containerId; }
+    public void setContainerId(String containerId) { this.containerId = containerId; }
 
     public static class Position {
         private double x;

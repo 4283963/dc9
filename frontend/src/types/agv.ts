@@ -14,6 +14,9 @@ export interface AgvStatus {
   speed: number;
   battery: number;
   status: 'RUNNING' | 'IDLE' | 'CHARGING' | 'ERROR';
+  hasContainer: boolean;
+  containerColor: string;
+  containerId: string;
 }
 
 export type ConnectionStatus = 'connected' | 'disconnected' | 'connecting';
